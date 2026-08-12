@@ -1,8 +1,6 @@
 name: Build CommandPost Latest
-
 on:
   workflow_dispatch:
-
 jobs:
   build:
     runs-on: macos-15
@@ -12,46 +10,42 @@ jobs:
         with:
           repository: CommandPost/CommandPost-App
           path: CommandPost-App
-
       - name: Checkout CommandPost Lua source
         uses: actions/checkout@v4
         with:
           repository: CommandPost/CommandPost
           ref: develop
           path: CommandPost
-
       - name: Align Dependency Paths
         run: |
           mkdir -p CommandPost-App/CommandPost
           cp -R CommandPost/* CommandPost-App/CommandPost/
-
       - name: Remove unsupported warning flags (search whole repo)
         working-directory: CommandPost-App
         run: |
-          echo "Files containing the flag:"
-          grep -rl -- "-Wno-implicit-void-ptr-cast" . || true
-          grep -rl -- "-Wno-implicit-void-ptr-cast" . | xargs -I{} sed -i '' 's/-Wno-implicit-void-ptr-cast//g' {}
-          grep -rl -- "-Wno-jump-misses-init" . | xargs -I{} sed -i '' 's/-Wno-jump-misses-init//g' {}
-          grep -rl -- "-Wno-implicit-int-enum-cast" . | xargs -I{} sed -i '' 's/-Wno-implicit-int-enum-cast//g' {}
-
-          
-      - name: List available schemes (check this if compile fails)
-        working-directory: CommandPost-App
-        run: xcodebuild -list -workspace Hammerspoon.xcworkspace
-
+          grep -rl -- "-Wno-implicit-void-ptr-cast" . | xargs -I{} sed -i '' 's/-Wno-implicit-void-ptr-cast//g' {} || true
+          grep -rl -- "-Wno-jump-misses-init" . | xargs -I{} sed -i '' 's/-Wno-jump-misses-init//g' {} || true
+          grep -rl -- "-Wno-implicit-int-enum-cast" . | xargs -I{} sed -i '' 's/-Wno-implicit-int-enum-cast//g' {} || true
       - name: Compile
+        id: compile
         working-directory: CommandPost-App
         run: |
+          set -o pipefail
           xcodebuild -workspace Hammerspoon.xcworkspace -scheme "Hammerspoon" -configuration Release \
             -destination 'generic/platform=macOS' \
-            CODE_SIGN_IDENTITY="-" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=YES
-
+            CODE_SIGN_IDENTITY="-" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=YES \
+            2>&1 | tee build.log
+      - name: Show real errors
+        if: always()
+        working-directory: CommandPost-App
+        run: |
+          echo "## Real compiler errors" >> $GITHUB_STEP_SUMMARY
+          grep -E ": error:" build.log | sort -u >> $GITHUB_STEP_SUMMARY || echo "No 'error:' lines found in build.log" >> $GITHUB_STEP_SUMMARY
       - name: Package DMG
         run: |
           mkdir -p dist
           cp -R CommandPost-App/build/Release/CommandPost.app dist/
           hdiutil create -format UDZO -srcfolder dist/ CommandPost_Latest.dmg
-
       - name: Upload DMG
         uses: actions/upload-artifact@v4
         with:
