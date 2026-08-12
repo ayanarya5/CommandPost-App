@@ -24,7 +24,14 @@ jobs:
         run: |
           mkdir -p CommandPost-App/CommandPost
           cp -R CommandPost/* CommandPost-App/CommandPost/
-          
+
+      - name: Remove unsupported warning flags
+        working-directory: CommandPost-App
+        run: |
+          sed -i '' 's/-Wno-implicit-void-ptr-cast//g' Hammerspoon.xcodeproj/project.pbxproj
+          sed -i '' 's/-Wno-jump-misses-init//g' Hammerspoon.xcodeproj/project.pbxproj
+          sed -i '' 's/-Wno-implicit-int-enum-cast//g' Hammerspoon.xcodeproj/project.pbxproj
+
           
       - name: List available schemes (check this if compile fails)
         working-directory: CommandPost-App
