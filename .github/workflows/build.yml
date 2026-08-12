@@ -17,6 +17,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: CommandPost/CommandPost
+          ref: develop
           path: CommandPost
 
       - name: Align Dependency Paths
