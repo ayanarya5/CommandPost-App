@@ -82,7 +82,19 @@ jobs:
       - name: Package DMG
         run: |
           mkdir -p dist
-          cp -R CommandPost-App/build/Release/CommandPost.app dist/
+
+          APP=$(find CommandPost-App -name "*.app" | head -1)
+
+          if [ -z "$APP" ]; then
+            echo "No .app found"
+            find CommandPost-App -name "*.app"
+            exit 1
+          fi
+
+          echo "Found app:"
+          echo "$APP"
+
+          cp -R "$APP" dist/
 
           hdiutil create \
             -format UDZO \
