@@ -85,12 +85,12 @@ jobs:
 
           mkdir -p dist
 
-          echo "Searching for CommandPost.app..."
+          echo "Searching for Hammerspoon.app..."
 
-          APP=$(find CommandPost-App -name "CommandPost.app" -type d | head -1)
+          APP=$(find CommandPost-App -name "Hammerspoon.app" -type d | head -1)
 
           if [ -z "$APP" ]; then
-            echo "CommandPost.app not found"
+            echo "Hammerspoon.app not found"
             echo "Available apps:"
             find CommandPost-App -name "*.app"
             exit 1
@@ -102,7 +102,7 @@ jobs:
           cp -R "$APP" dist/
 
           echo "App size:"
-          du -sh dist/CommandPost.app
+          du -sh dist/Hammerspoon.app
 
           hdiutil create \
             -format UDZO \
