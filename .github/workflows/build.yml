@@ -38,10 +38,10 @@ jobs:
           hdiutil attach SDK/WorkflowExtensionsSDK.dmg -nobrowse
 
           sudo installer \
-            -pkg "/Volumes/Workflow Extensions SDK/WorkflowExtensionsSDK.pkg" \
+            -pkg /Volumes/WorkflowExtensionsSDK/*.pkg \
             -target /
 
-          hdiutil detach "/Volumes/Workflow Extensions SDK"
+          hdiutil detach /Volumes/WorkflowExtensionsSDK
 
       - name: Remove unsupported warning flags
         working-directory: CommandPost-App
