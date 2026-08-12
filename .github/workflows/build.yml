@@ -27,12 +27,12 @@ jobs:
 
       - name: List available schemes (check this if compile fails)
         working-directory: CommandPost-App
-        run: xcodebuild -list
+        run: xcodebuild -list -workspace Hammerspoon.xcworkspace
 
       - name: Compile
         working-directory: CommandPost-App
         run: |
-          xcodebuild -workspace Hammerspoon.xcworkspace -scheme "CommandPost" -configuration Release \
+          xcodebuild -workspace Hammerspoon.xcworkspace -scheme "Hammerspoon" -configuration Release \
             -destination 'generic/platform=macOS' \
             CODE_SIGN_IDENTITY="-" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=YES
 
