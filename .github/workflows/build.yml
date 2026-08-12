@@ -32,7 +32,7 @@ jobs:
       - name: Compile
         working-directory: CommandPost-App
         run: |
-          xcodebuild -scheme "CommandPost" -configuration Release \
+          xcodebuild -workspace Hammerspoon.xcworkspace -scheme "CommandPost" -configuration Release \
             -destination 'generic/platform=macOS' \
             CODE_SIGN_IDENTITY="-" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=YES
 
