@@ -67,6 +67,7 @@ jobs:
             -scheme "Hammerspoon" \
             -configuration Release \
             -destination 'generic/platform=macOS' \
+            -derivedDataPath build \
             CODE_SIGN_IDENTITY="-" \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=YES \
@@ -85,24 +86,25 @@ jobs:
 
           mkdir -p dist
 
-          echo "Searching for Hammerspoon.app..."
+          echo "Searching for built application..."
 
-          APP=$(find CommandPost-App -name "Hammerspoon.app" -type d | head -1)
+          APP=$(find CommandPost-App/build -name "*.app" -type d | grep -v "Updater.app" | head -1)
 
           if [ -z "$APP" ]; then
-            echo "Hammerspoon.app not found"
-            echo "Available apps:"
-            find CommandPost-App -name "*.app"
+            echo "No built app found"
+            find CommandPost-App/build -name "*.app"
             exit 1
           fi
 
           echo "Found:"
           echo "$APP"
 
+          APP_NAME=$(basename "$APP")
+
           cp -R "$APP" dist/
 
           echo "App size:"
-          du -sh dist/Hammerspoon.app
+          du -sh "dist/$APP_NAME"
 
           hdiutil create \
             -format UDZO \
