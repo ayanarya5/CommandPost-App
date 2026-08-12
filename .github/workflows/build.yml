@@ -25,11 +25,6 @@ jobs:
           mkdir -p CommandPost-App/CommandPost
           cp -R CommandPost/* CommandPost-App/CommandPost/
           
-      - name: Select latest available Xcode
-        run: |
-          ls /Applications | grep Xcode
-          sudo xcode-select -s /Applications/Xcode.app
-          xcodebuild -version
           
       - name: List available schemes (check this if compile fails)
         working-directory: CommandPost-App
