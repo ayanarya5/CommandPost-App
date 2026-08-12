@@ -25,12 +25,14 @@ jobs:
           mkdir -p CommandPost-App/CommandPost
           cp -R CommandPost/* CommandPost-App/CommandPost/
 
-      - name: Remove unsupported warning flags
+      - name: Remove unsupported warning flags (search whole repo)
         working-directory: CommandPost-App
         run: |
-          sed -i '' 's/-Wno-implicit-void-ptr-cast//g' Hammerspoon.xcodeproj/project.pbxproj
-          sed -i '' 's/-Wno-jump-misses-init//g' Hammerspoon.xcodeproj/project.pbxproj
-          sed -i '' 's/-Wno-implicit-int-enum-cast//g' Hammerspoon.xcodeproj/project.pbxproj
+          echo "Files containing the flag:"
+          grep -rl -- "-Wno-implicit-void-ptr-cast" . || true
+          grep -rl -- "-Wno-implicit-void-ptr-cast" . | xargs -I{} sed -i '' 's/-Wno-implicit-void-ptr-cast//g' {}
+          grep -rl -- "-Wno-jump-misses-init" . | xargs -I{} sed -i '' 's/-Wno-jump-misses-init//g' {}
+          grep -rl -- "-Wno-implicit-int-enum-cast" . | xargs -I{} sed -i '' 's/-Wno-implicit-int-enum-cast//g' {}
 
           
       - name: List available schemes (check this if compile fails)
