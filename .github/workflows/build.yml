@@ -81,25 +81,36 @@ jobs:
 
       - name: Package DMG
         run: |
+          set -e
+
           mkdir -p dist
 
-          APP=$(find CommandPost-App -name "*.app" | head -1)
+          echo "Searching for CommandPost.app..."
+
+          APP=$(find CommandPost-App -name "CommandPost.app" -type d | head -1)
 
           if [ -z "$APP" ]; then
-            echo "No .app found"
+            echo "CommandPost.app not found"
+            echo "Available apps:"
             find CommandPost-App -name "*.app"
             exit 1
           fi
 
-          echo "Found app:"
+          echo "Found:"
           echo "$APP"
 
           cp -R "$APP" dist/
+
+          echo "App size:"
+          du -sh dist/CommandPost.app
 
           hdiutil create \
             -format UDZO \
             -srcfolder dist/ \
             CommandPost_Latest.dmg
+
+          echo "DMG size:"
+          ls -lh CommandPost_Latest.dmg
 
       - name: Upload DMG
         uses: actions/upload-artifact@v4
