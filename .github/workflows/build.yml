@@ -1,0 +1,48 @@
+name: Build CommandPost Latest
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-14
+    steps:
+      - name: Checkout CommandPost-App
+        uses: actions/checkout@v4
+        with:
+          repository: CommandPost/CommandPost-App
+          path: CommandPost-App
+
+      - name: Checkout CommandPost Lua source
+        uses: actions/checkout@v4
+        with:
+          repository: CommandPost/CommandPost
+          path: CommandPost
+
+      - name: Align Dependency Paths
+        run: |
+          mkdir -p CommandPost-App/CommandPost
+          cp -R CommandPost/* CommandPost-App/CommandPost/
+
+      - name: List available schemes (check this if compile fails)
+        working-directory: CommandPost-App
+        run: xcodebuild -list
+
+      - name: Compile
+        working-directory: CommandPost-App
+        run: |
+          xcodebuild -scheme "CommandPost" -configuration Release \
+            -destination 'generic/platform=macOS' \
+            CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO
+
+      - name: Package DMG
+        run: |
+          mkdir -p dist
+          cp -R CommandPost-App/build/Release/CommandPost.app dist/
+          hdiutil create -format UDZO -srcfolder dist/ CommandPost_Latest.dmg
+
+      - name: Upload DMG
+        uses: actions/upload-artifact@v4
+        with:
+          name: CommandPost-Latest
+          path: CommandPost_Latest.dmg
