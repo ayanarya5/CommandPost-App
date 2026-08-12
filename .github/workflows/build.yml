@@ -33,18 +33,20 @@ jobs:
           mkdir -p CommandPost-App/CommandPost
           cp -R CommandPost/* CommandPost-App/CommandPost/
 
-      - name: Remove LateNite App Requirement
+      - name: Locate LateNite Requirement
         working-directory: CommandPost-App
         run: |
-          echo "Searching for LateNite requirement..."
+          echo "Searching LateNite references..."
+          grep -Rni "LateNite" CommandPost || true
 
-          grep -R "Please download and install a LateNite App" CommandPost || true
+          echo "Searching App Store references..."
+          grep -Rni "App Store" CommandPost || true
 
-          grep -rl "Please download and install a LateNite App" CommandPost | while read file; do
-            echo "Removing LateNite requirement from:"
-            echo "$file"
-            sed -i '' '/Please download and install a LateNite App/d' "$file"
-          done
+          echo "Searching version rollback references..."
+          grep -Rni "previous version\|v1\|rollback" CommandPost || true
+
+          echo "Searching dialog references..."
+          grep -Rni "hs.dialog\|dialog" CommandPost || true
 
       - name: Install Workflow Extensions SDK
         run: |
