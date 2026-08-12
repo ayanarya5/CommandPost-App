@@ -33,6 +33,19 @@ jobs:
           mkdir -p CommandPost-App/CommandPost
           cp -R CommandPost/* CommandPost-App/CommandPost/
 
+      - name: Remove LateNite App Requirement
+        working-directory: CommandPost-App
+        run: |
+          echo "Searching for LateNite requirement..."
+
+          grep -R "Please download and install a LateNite App" CommandPost || true
+
+          grep -rl "Please download and install a LateNite App" CommandPost | while read file; do
+            echo "Removing LateNite requirement from:"
+            echo "$file"
+            sed -i '' '/Please download and install a LateNite App/d' "$file"
+          done
+
       - name: Install Workflow Extensions SDK
         run: |
           hdiutil attach SDK/WorkflowExtensionsSDK.dmg -nobrowse
