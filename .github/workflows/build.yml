@@ -21,6 +21,13 @@ jobs:
           ref: develop
           path: CommandPost
 
+      - name: Checkout Workflow Extensions SDK
+        uses: actions/checkout@v4
+        with:
+          repository: ayanarya5/CommandPost-App
+          sparse-checkout: WorkflowExtensionsSDK.dmg
+          path: SDK
+
       - name: Align Dependency Paths
         run: |
           mkdir -p CommandPost-App/CommandPost
@@ -28,7 +35,7 @@ jobs:
 
       - name: Install Workflow Extensions SDK
         run: |
-          hdiutil attach CommandPost-App/WorkflowExtensionsSDK.dmg -nobrowse
+          hdiutil attach SDK/WorkflowExtensionsSDK.dmg -nobrowse
 
           sudo installer \
             -pkg "/Volumes/Workflow Extensions SDK/WorkflowExtensionsSDK.pkg" \
