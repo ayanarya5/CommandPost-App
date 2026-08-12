@@ -26,6 +26,20 @@ jobs:
           grep -rl -- "-Wno-implicit-void-ptr-cast" . | xargs -I{} sed -i '' 's/-Wno-implicit-void-ptr-cast//g' {} || true
           grep -rl -- "-Wno-jump-misses-init" . | xargs -I{} sed -i '' 's/-Wno-jump-misses-init//g' {} || true
           grep -rl -- "-Wno-implicit-int-enum-cast" . | xargs -I{} sed -i '' 's/-Wno-implicit-int-enum-cast//g' {} || true
+      - name: List schemes to summary
+        working-directory: CommandPost-App
+        run: |
+          echo "## Available schemes" >> $GITHUB_STEP_SUMMARY
+          xcodebuild -list -workspace Hammerspoon.xcworkspace >> $GITHUB_STEP_SUMMARY 2>&1
+
+      - name: Build ProExtension first
+        working-directory: CommandPost-App
+        run: |
+          xcodebuild -workspace Hammerspoon.xcworkspace -scheme "ProExtension" -configuration Release \
+            -destination 'generic/platform=macOS' \
+            CODE_SIGN_IDENTITY="-" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=YES \
+            || echo "ProExtension scheme build failed or scheme name wrong, continuing anyway"
+
       - name: Compile
         id: compile
         working-directory: CommandPost-App
